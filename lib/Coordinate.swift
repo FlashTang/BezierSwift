@@ -13,6 +13,9 @@ struct Coordinate {
     var y:CGFloat
     var z:CGFloat?
     
+    var t:CGFloat?
+    var d:CGFloat?
+    
     init(x:CGFloat,y:CGFloat,z:CGFloat? = nil) {
         self.x = x
         self.y = y

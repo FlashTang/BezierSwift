@@ -21,6 +21,7 @@ class Bezier {
     var dpoints:[[Coordinate]] = []
     var clockwise:Bool = false
     var ratios:[CGFloat]?
+    var _print:String = ""
     /**
     * Bezier curve constructor. The constructor argument can be one of three things:
     *
@@ -254,7 +255,72 @@ class Bezier {
         return utils.compute(t: t, points: self.points, _3d: self._3d)
         
     }
-    
+    func coordDigest() -> String {
+      
+        var pri = ""
+        for (i,c) in self.points.enumerated() {
+            pri = "\(pri)\(i)\(c.x)\(c.y)\(c.z != nil ? c.z! : 0)"
+        }
+        return pri
+//      return this.points.map(function(c,pos) {
+//        return '' + pos + c.x + c.y + (c.z?c.z:0);
+//      }).join('');
+    }
+    func verify() {
+      let print = self.coordDigest()
+      if (print != self._print) {
+        self._print = print
+        self.update()
+      }
+    }
+    func getLUT(steps:Int = 100) -> [Coordinate] {
+      self.verify()
+      var _steps = steps
+      if (self._lut.count == _steps) {
+        return self._lut
+      }
+      self._lut = []
+      // We want a range from 0 to 1 inclusive, so
+      // we decrement and then use <= rather than <:
+      _steps -= 1
+        var __t:Int = 0
+        while __t <= _steps {
+            self._lut.append(self.compute(t: CGFloat(__t) / CGFloat(_steps)))
+            __t += 1
+      }
+      return self._lut
+    }
+//    func project(point:Coordinate) -> Coordinate {
+//      // step 1: coarse check
+//      var LUT = self.getLUT(),
+//        l = LUT.length - 1,
+//        closest = utils.closest(LUT, point),
+//        mdist = closest.mdist,
+//        mpos = closest.mpos;
+//
+//      // step 2: fine check
+//      var ft,
+//        t,
+//        p,
+//        d,
+//        t1 = (mpos - 1) / l,
+//        t2 = (mpos + 1) / l,
+//        step = 0.1 / l;
+//      mdist += 1;
+//      for (t = t1, ft = t; t < t2 + step; t += step) {
+//        p = this.compute(t);
+//        d = utils.dist(point, p);
+//        if (d < mdist) {
+//          mdist = d;
+//          ft = t;
+//        }
+//      }
+//      p = this.compute(ft);
+//      p.t = ft;
+//      p.d = mdist;
+//      return p;
+//    }
+//    
     
 }
 
