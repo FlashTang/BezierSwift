@@ -217,14 +217,14 @@ class utils {
         return points[0]
       }
 
-      var order = points.count - 1
+      let order = points.count - 1
 
       if (t == 1) {
         return points[order]
       }
 
       var p = points
-      var mt = 1 - t
+      let mt = 1 - t
 
       // constant?
       if (order == 0) {
@@ -333,7 +333,29 @@ class utils {
        print("错误：来自 computeWithRatios")
        return .zero
     }
+    
+    class func closest(LUT:[Coordinate], point:Coordinate) -> Closest {
+        var mdist:CGFloat = pow(2, 63),
+        mpos:CGFloat = 0,
+        d:CGFloat = 0
+        
+        var idx = 0
+        LUT.forEach { (p) in
+            d = utils.dist(p1: point, p2: p)
+            if (d < mdist) {
+              mdist = d;
+              mpos = CGFloat(idx)
+            }
+            idx += 1
+        }
+ 
+      return Closest(mdist: mdist, mpos: mpos) // { mdist: mdist, mpos: mpos };
+    }
 }
 
 
+struct Closest {
+    var mdist:CGFloat
+    var mpos:CGFloat
+}
 

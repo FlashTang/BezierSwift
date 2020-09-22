@@ -290,37 +290,41 @@ class Bezier {
       }
       return self._lut
     }
-//    func project(point:Coordinate) -> Coordinate {
-//      // step 1: coarse check
-//      var LUT = self.getLUT(),
-//        l = LUT.length - 1,
-//        closest = utils.closest(LUT, point),
-//        mdist = closest.mdist,
-//        mpos = closest.mpos;
-//
-//      // step 2: fine check
-//      var ft,
-//        t,
-//        p,
-//        d,
-//        t1 = (mpos - 1) / l,
-//        t2 = (mpos + 1) / l,
-//        step = 0.1 / l;
-//      mdist += 1;
-//      for (t = t1, ft = t; t < t2 + step; t += step) {
-//        p = this.compute(t);
-//        d = utils.dist(point, p);
-//        if (d < mdist) {
-//          mdist = d;
-//          ft = t;
-//        }
-//      }
-//      p = this.compute(ft);
-//      p.t = ft;
-//      p.d = mdist;
-//      return p;
-//    }
-//    
+    func project(point:Coordinate) -> Coordinate {
+      // step 1: coarse check
+      var LUT = self.getLUT(),
+        l:CGFloat = CGFloat(LUT.count - 1),
+        closest = utils.closest(LUT: LUT, point: point),
+        mdist = closest.mdist,
+        mpos = closest.mpos
+
+      // step 2: fine check
+        var ft:CGFloat,
+        t:CGFloat,
+        p:Coordinate,
+        d:CGFloat,
+        t1:CGFloat = (mpos - 1) / l,
+        t2:CGFloat = (mpos + 1) / l,
+        step:CGFloat = 0.1 / l;
+      mdist += 1;
+        t = t1
+        ft = t
+        while t < t2 + step {
+            p = self.compute(t: t)
+            d = utils.dist(p1: point, p2: p)
+                   if (d < mdist) {
+                     mdist = d
+                     ft = t
+                   }
+            t += step
+        }
+     
+        p = self.compute(t: ft)
+      p.t = ft
+      p.d = mdist
+      return p
+    }
+    
     
 }
 
