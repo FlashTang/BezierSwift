@@ -7,7 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		244063E8251A4CCA00947AC4 /* lib in Resources */ = {isa = PBXBuildFile; fileRef = 244063E7251A4CCA00947AC4 /* lib */; };
+		245BA138251A540B0098AEEA /* utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 245BA136251A540B0098AEEA /* utils.swift */; };
+		245BA139251A540B0098AEEA /* Bezier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 245BA137251A540B0098AEEA /* Bezier.swift */; };
+		245BA13B251A54600098AEEA /* Bezier+Static.swift in Sources */ = {isa = PBXBuildFile; fileRef = 245BA13A251A54600098AEEA /* Bezier+Static.swift */; };
+		245BA13D251A54DB0098AEEA /* Coordinate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 245BA13C251A54DB0098AEEA /* Coordinate.swift */; };
 		249E3F1D2516746900C85308 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 249E3F1C2516746900C85308 /* AppDelegate.swift */; };
 		249E3F1F2516746900C85308 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 249E3F1E2516746900C85308 /* SceneDelegate.swift */; };
 		249E3F212516746900C85308 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 249E3F202516746900C85308 /* ViewController.swift */; };
@@ -17,7 +20,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		244063E7251A4CCA00947AC4 /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = ../../lib; sourceTree = "<group>"; };
+		245BA136251A540B0098AEEA /* utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = utils.swift; sourceTree = "<group>"; };
+		245BA137251A540B0098AEEA /* Bezier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bezier.swift; sourceTree = "<group>"; };
+		245BA13A251A54600098AEEA /* Bezier+Static.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bezier+Static.swift"; sourceTree = "<group>"; };
+		245BA13C251A54DB0098AEEA /* Coordinate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinate.swift; sourceTree = "<group>"; };
 		249E3F192516746900C85308 /* Bezier.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bezier.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		249E3F1C2516746900C85308 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		249E3F1E2516746900C85308 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -39,6 +45,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		245BA135251A540B0098AEEA /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				245BA137251A540B0098AEEA /* Bezier.swift */,
+				245BA13C251A54DB0098AEEA /* Coordinate.swift */,
+				245BA13A251A54600098AEEA /* Bezier+Static.swift */,
+				245BA136251A540B0098AEEA /* utils.swift */,
+			);
+			name = lib;
+			path = ../../lib;
+			sourceTree = "<group>";
+		};
 		249E3F102516746800C85308 = {
 			isa = PBXGroup;
 			children = (
@@ -61,7 +79,7 @@
 				249E3F1C2516746900C85308 /* AppDelegate.swift */,
 				249E3F1E2516746900C85308 /* SceneDelegate.swift */,
 				249E3F202516746900C85308 /* ViewController.swift */,
-				244063E7251A4CCA00947AC4 /* lib */,
+				245BA135251A540B0098AEEA /* lib */,
 				249E3F222516746900C85308 /* Main.storyboard */,
 				249E3F252516747100C85308 /* Assets.xcassets */,
 				249E3F272516747100C85308 /* LaunchScreen.storyboard */,
@@ -130,7 +148,6 @@
 			files = (
 				249E3F292516747100C85308 /* LaunchScreen.storyboard in Resources */,
 				249E3F262516747100C85308 /* Assets.xcassets in Resources */,
-				244063E8251A4CCA00947AC4 /* lib in Resources */,
 				249E3F242516746900C85308 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -142,9 +159,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				245BA13D251A54DB0098AEEA /* Coordinate.swift in Sources */,
 				249E3F212516746900C85308 /* ViewController.swift in Sources */,
+				245BA139251A540B0098AEEA /* Bezier.swift in Sources */,
 				249E3F1D2516746900C85308 /* AppDelegate.swift in Sources */,
 				249E3F1F2516746900C85308 /* SceneDelegate.swift in Sources */,
+				245BA13B251A54600098AEEA /* Bezier+Static.swift in Sources */,
+				245BA138251A540B0098AEEA /* utils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
