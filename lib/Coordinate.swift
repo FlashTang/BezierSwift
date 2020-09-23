@@ -65,3 +65,9 @@ struct Line {
     var p1:Coordinate
     var p2:Coordinate
 }
+
+struct SplitResult {
+    var left:Bezier
+    var right:Bezier
+    var span:[Coordinate]
+}

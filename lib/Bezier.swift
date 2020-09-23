@@ -255,6 +255,7 @@ class Bezier {
         return utils.compute(t: t, points: self.points, _3d: self._3d)
         
     }
+    //已验证（差别）
     func coordDigest() -> String {
       
         var pri = ""
@@ -273,6 +274,7 @@ class Bezier {
         self.update()
       }
     }
+    //已验证
     func getLUT(steps:Int = 100) -> [Coordinate] {
       self.verify()
       var _steps = steps
@@ -290,6 +292,7 @@ class Bezier {
       }
       return self._lut
     }
+    //已验证
     func project(point:Coordinate) -> Coordinate {
       // step 1: coarse check
       var LUT = self.getLUT(),
@@ -325,6 +328,148 @@ class Bezier {
       return p
     }
     
+    
+    
+    func get(t:CGFloat) -> Coordinate {
+        return self.compute(t: t)
+    }
+    
+    func point (idx:Int) -> Coordinate {
+      return self.points[idx]
+    }
+    //已验证
+    func curvature(t:CGFloat) -> Curvature {
+        return utils.curvature(t: t, points: self.points, _3d: self._3d)
+    }
+    //已验证 ，__normal3 待验证
+    func normal(t:CGFloat) -> Coordinate {
+        return self._3d ? self.__normal3(t: t) : self.__normal2(t: t)
+    }
+    //已验证
+    func __normal2(t:CGFloat) -> Coordinate {
+        let d = self.derivative(t: t)
+      let q = sqrt(d.x * d.x + d.y * d.y)
+      return Coordinate(x: -d.y / q, y: d.x / q)
+    }
+    //待验证
+    func __normal3(t:CGFloat) -> Coordinate {
+      // see http://stackoverflow.com/questions/25453159
+        var r1 = self.derivative(t: t),
+        r2 = self.derivative(t: t + 0.01),
+        q1 = sqrt(r1.x * r1.x + r1.y * r1.y + r1.z! * r1.z!),
+        q2 = sqrt(r2.x * r2.x + r2.y * r2.y + r2.z! * r2.z!);
+      r1.x = r1.x / q1
+        r1.y = r1.y / q1
+      r1.z = r1.z! /  q1
+        r2.x = r2.x / q2
+        r2.y = r2.y / q2
+        r2.z = r2.z! / q2
+      // cross product
+        var c = Coordinate(x:r2.y * r1.z! - r2.z! * r1.y,y:r2.z! * r1.x - r2.x * r1.z!,z:r2.x * r1.y - r2.y * r1.x)
+ 
+      let m = sqrt(c.x * c.x + c.y * c.y + c.z! * c.z!)
+      c.x = c.x / m
+      c.y = c.y / m
+        c.z = c.z! / m
+      // rotation matrix
+      let R = [
+        c.x * c.x,
+        c.x * c.y - c.z!,
+        c.x * c.z! + c.y,
+        c.x * c.y + c.z!,
+        c.y * c.y,
+        c.y * c.z! - c.x,
+        c.x * c.z! - c.y,
+        c.y * c.z! + c.x,
+        c.z! * c.z!
+      ];
+      // normal vector:
+        let n = Coordinate(x:R[0] * r1.x + R[1] * r1.y + R[2] * r1.z!,y:R[3] * r1.x + R[4] * r1.y + R[5] * r1.z!,z:R[6] * r1.x + R[7] * r1.y + R[8] * r1.z!)
+      return n
+    }
+    //已验证验证，怀疑，存疑
+    func hull(t:CGFloat) -> [Coordinate] {
+      var p = self.points,
+        _p:[Coordinate] = [],
+        pt:Coordinate,
+        q:[Coordinate] = [],
+        idx:Int = 0,
+        i:Int = 0,
+        l = 0
+        
+        q.append(p[0])//q[idx] = p[0]
+        //idx+=1
+        q.append(p[1])//q[idx] = p[1]
+        //idx+=1
+        q.append(p[2])//q[idx] = p[2]
+        idx+=3
+      if (self.order == 3) {
+        q.append(p[3])//q[idx] = p[3]
+      }
+      // we lerp between all points at each iteration, until we have 1 point left.
+        while (p.count > 1) {
+        _p = []
+            i = 0
+            l = p.count - 1
+            while i < l {
+                pt = utils.lerp(r: t, v1: p[i], v2: p[i + 1])
+                q.append(pt)//q[idx] = pt
+                //idx += 1
+                _p.append(pt)//_p.append(pt)
+                i += 1
+            }
+        
+        p = _p
+      }
+      return q
+    }
+     
+    func split(t1:CGFloat, t2:CGFloat? = nil) -> Any {
+      // shortcuts
+        if t1 == 0 && t2 != 0 && t2 != nil {
+            if let left = (self.split(t1: t2!) as? SplitResult)?.left {
+                return left
+            }
+        }
+//      if (t1 == 0 && !!t2) {
+//        return this.split(t2).left;
+//      }
+      if (t2 == 1) {
+        if let right = (self.split(t1: t1) as? SplitResult)?.right{
+            return right
+        }
+      }
+
+      // no shortcut: use "de Casteljau" iteration.
+        let q = self.hull(t: t1)
+        let _l = self.order == 2 ? Bezier(coords: [q[0], q[3], q[5]]) : Bezier(coords: [q[0], q[4], q[7], q[9]])
+        let _r = self.order == 2 ? Bezier(coords: [q[5], q[4], q[2]]) : Bezier(coords: [q[9], q[8], q[6], q[3]])
+        let result = SplitResult(left: _l, right: _r, span: q)
+       
+      // make sure we bind _t1/_t2 information!
+        result.left._t1 = utils.map(v: 0, ds: 0, de: 1, ts: self._t1, te: self._t2)
+        result.left._t2 = utils.map(v: t1, ds: 0, de: 1, ts: self._t1, te: self._t2)
+        result.right._t1 = utils.map(v: t1, ds: 0, de: 1, ts: self._t1, te: self._t2)
+        result.right._t2 = utils.map(v: 1, ds: 0, de: 1, ts: self._t1, te: self._t2)
+
+      // if we have no t2, we're done
+      if (t2 == nil) {
+        return result
+      }
+
+      // if we have a t2, split again:
+        var __t2 = t2
+        __t2 = utils.map(v: t2!, ds: t1, de: 1, ts: 0, te: 1)
+        let subsplit = result.right.split(t1: __t2!)
+        if let left = (subsplit as? SplitResult)?.left{
+            return left
+        }
+        
+        print("Error from split func")
+        
+        return false
+       
+    } 
     
 }
 

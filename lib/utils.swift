@@ -76,7 +76,7 @@ class utils {
 
     }
     
-    class func derive(points:[Coordinate], _3d:Bool) -> [[Coordinate]]{
+    class func derive(points:[Coordinate], _3d:Bool = false) -> [[Coordinate]]{
         var dpoints:[[Coordinate]] = []
         var p:[Coordinate] = points,d = p.count,c = d - 1
         while d > 1 {
@@ -99,9 +99,6 @@ class utils {
             d -= 1
             c -= 1
         }
-//      for (var p = points, d = p.length, c = d - 1; d > 1; d--, c--) {
-//
-//      }
       return dpoints
     }
     
@@ -211,7 +208,7 @@ class utils {
       return a - b
     }
     
-    class func compute(t:CGFloat, points:[Coordinate], _3d:Bool) -> Coordinate {
+    class func compute(t:CGFloat, points:[Coordinate], _3d:Bool = false) -> Coordinate {
       // shortcuts
       if (t == 0) {
         return points[0]
@@ -351,6 +348,90 @@ class utils {
  
       return Closest(mdist: mdist, mpos: mpos) // { mdist: mdist, mpos: mpos };
     }
+    
+    class func curvature(t:CGFloat, points:[Coordinate], _3d:Bool, kOnly:Bool = false) -> Curvature {
+        let dpoints = utils.derive(points: points)
+      let d1 = dpoints[0]
+      let d2 = dpoints[1]
+        var num:CGFloat,dnm:CGFloat, adk:CGFloat = 0, dk:CGFloat = 0, k:CGFloat=0, r:CGFloat=0
+
+      //
+      // We're using the following formula for curvature:
+      //
+      //              x'y" - y'x"
+      //   k(t) = ------------------
+      //           (x'² + y'²)^(3/2)
+      //
+      // from https://en.wikipedia.org/wiki/Radius_of_curvature#Definition
+      //
+      // With it corresponding 3D counterpart:
+      //
+      //          sqrt( (y'z" - y"z')² + (z'x" - z"x')² + (x'y" - x"y')²)
+      //   k(t) = -------------------------------------------------------
+      //                     (x'² + y'² + z'²)^(3/2)
+      //
+
+        let d = utils.compute(t: t, points: d1)
+        let dd = utils.compute(t: t, points: d2)
+      let qdsum = d.x*d.x + d.y*d.y
+      if (_3d) {
+        num = sqrt(
+          pow(d.y * dd.z! - dd.y * d.z!, 2) +
+          pow(d.z! * dd.x - dd.z! * d.x, 2) +
+          pow(d.x*dd.y - dd.x*d.y, 2)
+        )
+        dnm = pow(qdsum + d.z! * d.z!, 3/2)
+      } else {
+        num = d.x*dd.y - d.y*dd.x
+        dnm = pow(qdsum, 3/2)
+      }
+
+      if (num == 0 || dnm == 0) {
+        return Curvature(k: 0, r: 0) //{ k:0, r:0 };
+      }
+
+      k = num/dnm
+      r = dnm/num
+
+      // We're also computing the derivative of kappa, because
+      // there is value in knowing the rate of change for the
+      // curvature along the curve. And we're just going to
+      // ballpark it based on an epsilon.
+      if (!kOnly) {
+        // compute k'(t) based on the interval before, and after it,
+        // to at least try to not introduce forward/backward pass bias.
+        let pk = utils.curvature(t: t-0.001, points: points, _3d: _3d, kOnly: true).k
+        let nk = utils.curvature(t: t+0.001, points: points, _3d: _3d, kOnly: true).k
+        dk = ((nk-k) + (k-pk))/2
+        adk = (abs(nk-k) + abs(k-pk))/2
+      }
+
+      return Curvature(k: k, r: r, dk: dk, adk: adk)//{ k: k, r: r, dk: dk, adk:adk, };
+    }
+    
+    class func lerp(r:CGFloat, v1:Coordinate, v2:Coordinate) -> Coordinate {
+        var ret = Coordinate(x:v1.x + r * (v2.x - v1.x),y:v1.y + r * (v2.y - v1.y)) // = {
+        
+        
+        //怀疑处
+        if v1.z != nil && v2.z != nil {
+            ret.z = v1.z! + r * (v2.z! - v1.z!)
+        }
+//      if (!!v1.z && !!v2.z) {
+//        ret.z = v1.z + r * (v2.z - v1.z);
+//      }
+      return ret
+    }
+    
+    class func map(v:CGFloat, ds:CGFloat, de:CGFloat, ts:CGFloat, te:CGFloat) -> CGFloat {
+        let d1 = de - ds,
+        d2 = te - ts,
+        v2 = v - ds,
+        r = v2 / d1
+        return ts + d2 * r
+    }
+    
+    
 }
 
 
@@ -359,3 +440,10 @@ struct Closest {
     var mpos:CGFloat
 }
 
+
+struct Curvature {
+    var k:CGFloat
+    var r:CGFloat
+    var dk:CGFloat? = nil
+    var adk:CGFloat? = nil
+}

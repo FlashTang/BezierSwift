@@ -21,7 +21,7 @@ class ViewController: UIViewController {
         //print(Bezier.quadraticFromPoints(p1: Coordinate(x:10, y: 0, z: nil), p2: Coordinate(x:50, y:0, z: nil), p3: Coordinate(x: 0, y: 0, z: nil)).points)
         let qp = Bezier.cubicFromPoints(S: Coordinate(x: 40, y: 400), B: Coordinate(x: 150, y: 300), E: Coordinate(x: 300, y: 400)).points
          
-        print(Bezier.cubicFromPoints(S: Coordinate(x: 40, y: 400), B: Coordinate(x: 150, y: 300), E: Coordinate(x: 300, y: 400)).project(point: Coordinate(x: 20, y: 40)))
+        print(Bezier.cubicFromPoints(S: Coordinate(x: 40, y: 400), B: Coordinate(x: 150, y: 300), E: Coordinate(x: 300, y: 400)).split(t1: 0.4))
         
         qp.forEach { (cd) in
           //  print(cd.cgPoint())
