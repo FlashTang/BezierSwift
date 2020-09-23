@@ -274,6 +274,7 @@ class Bezier {
         self.update()
       }
     }
+    
     //已验证
     func getLUT(steps:Int = 100) -> [Coordinate] {
       self.verify()
@@ -469,7 +470,8 @@ class Bezier {
         
         return false
        
-    } 
+    }
+     
     
 }
 

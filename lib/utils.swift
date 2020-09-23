@@ -63,6 +63,10 @@ class utils {
       0.0123412297999871995468056670700372915759,
       0.0123412297999871995468056670700372915759
     ]
+    
+    static let epsilon:CGFloat = 0.000001
+    static let tau:CGFloat = 2 * CGFloat.pi
+    
     class func align(points:[Coordinate], line:Line) -> [Coordinate] {
         let tx = line.p1.x
         let ty = line.p1.y
@@ -431,11 +435,65 @@ class utils {
         return ts + d2 * r
     }
     
+    class func between(v:CGFloat, m:CGFloat, M:CGFloat) -> Bool {
+      return ((m <= v && v <= M) || utils.approximately(a: v, b: m) || utils.approximately(a: v, b: M))
+    }
+    
+    class func approximately(a:CGFloat, b:CGFloat, precision:CGFloat? = nil) -> Bool{
+         
+        return abs(a - b) <= (precision != nil ? precision! : epsilon)
+    }
+    
+    class func lli8(x1:CGFloat, y1:CGFloat, x2:CGFloat, y2:CGFloat, x3:CGFloat, y3:CGFloat, x4:CGFloat, y4:CGFloat) -> CGPoint?{
+      let nx =
+          (x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4),
+        ny = (x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4),
+        d = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
+      if (d == 0) {
+        return nil
+      }
+      return CGPoint(x: nx / d, y: ny / d)
+    }
+    
+    class func lli4(p1:CGPoint,p2:CGPoint, p3:CGPoint, p4:CGPoint) -> CGPoint? {
+      let x1 = p1.x,
+        y1 = p1.y,
+        x2 = p2.x,
+        y2 = p2.y,
+        x3 = p3.x,
+        y3 = p3.y,
+        x4 = p4.x,
+        y4 = p4.y;
+        return utils.lli8(x1: x1, y1: y1, x2: x2, y2: y2, x3: x3, y3: y3, x4: x4, y4: y4);
+    }
+    
+    class func lli(v1:Coordinate, v2:Coordinate) -> CGPoint? {
+        if let v1c = v1.c,let v2c = v2.c {
+            return utils.lli4(p1: v1.cgPoint(), p2: v1c, p3: v2.cgPoint(), p4: v2c)
+        }
+        else{
+            return nil
+        }
+        
+    }
+    
+    class func makeline(p1:CGPoint, p2:CGPoint) -> Bezier {
+      let x1 = p1.x,
+        y1 = p1.y,
+        x2 = p2.x,
+        y2 = p2.y,
+        dx = (x2 - x1) / 3,
+        dy = (y2 - y1) / 3
+        return Bezier(coords: x1,y1,x1 + dx,y1 + dy,x1 + 2 * dx,y1 + 2 * dy,x2,y2)
+    }
+    
+    
     
 }
 
 
 struct Closest {
+    
     var mdist:CGFloat
     var mpos:CGFloat
 }

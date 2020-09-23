@@ -16,6 +16,8 @@ struct Coordinate {
     var t:CGFloat?
     var d:CGFloat?
     
+    var c:CGPoint?
+    
     init(x:CGFloat,y:CGFloat,z:CGFloat? = nil) {
         self.x = x
         self.y = y
@@ -70,4 +72,12 @@ struct SplitResult {
     var left:Bezier
     var right:Bezier
     var span:[Coordinate]
+}
+
+
+extension CGPoint {
+    
+    func toCoordinate() -> Coordinate {
+        return Coordinate(x: self.x, y: self.y)
+    }
 }
